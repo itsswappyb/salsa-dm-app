@@ -14,11 +14,27 @@ export default async function handler(
 ) {
   switch (req.method) {
     case "GET":
-    // return await getMessages(req, res);
+      return await getMessages(req, res);
     case "POST":
       return await createMessage(req, res);
     default:
       return res.status(405).end();
+  }
+}
+
+async function getMessages(
+  req: NextApiRequest,
+  res: NextApiResponse<ResponseData>,
+) {
+  try {
+    const messages: Message[] = await prisma.message.findMany();
+    return res.status(200).json({ data: messages });
+  } catch (err: any) {
+    console.error("Request error:", err);
+    res.status(500).json({
+      error: "Error getting messages",
+      message: err.message || "Error getting messages",
+    });
   }
 }
 
@@ -48,7 +64,7 @@ async function createMessage(
   } catch (err: any) {
     console.error("Request error:", err);
     res.status(500).json({
-      error: "Error creating book suggestion",
+      error: "Error creating message",
       message: err.message,
     });
   }
