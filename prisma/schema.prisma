@@ -12,11 +12,11 @@ datasource db {
 }
 
 model User {
-  id                Int       @id @default(autoincrement())
-  email             String    @unique
-  username          String
-  received_messages Message[] @relation("recipient")
-  sent_messages     Message[] @relation("sender")
+  id               Int       @id @default(autoincrement())
+  email            String    @unique
+  username         String
+  receivedMessages Message[] @relation("recipient")
+  sentMessages     Message[] @relation("sender")
 }
 
 model Message {
@@ -36,5 +36,6 @@ model Message {
 enum Status {
   PENDING
   ACCEPTED
+  // Optional - if you want to track rejected messages (ex: Archived)
   REJECTED
 }
