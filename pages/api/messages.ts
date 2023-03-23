@@ -27,7 +27,11 @@ async function getMessages(
   res: NextApiResponse<ResponseData>,
 ) {
   try {
-    const messages: Message[] = await prisma.message.findMany();
+    const messages: Message[] = await prisma.message.findMany({
+      where: {
+        recipientId: Number(req.query.recipientId),
+      },
+    });
     return res.status(200).json({ data: messages });
   } catch (err: any) {
     console.error("Request error:", err);
