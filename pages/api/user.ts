@@ -15,7 +15,7 @@ export default async function handler(
     try {
       const user: User | null = await prisma.user.findFirst({
         where: {
-          username: req.query.username as string,
+          id: Number(req.query.userId),
         },
       });
 

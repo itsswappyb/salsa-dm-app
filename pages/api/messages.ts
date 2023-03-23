@@ -18,9 +18,9 @@ export default async function handler(
     case "POST":
       return await createMessage(req, res);
     case "PUT":
-    //   return await updateMessage(req, res);
+      return await updateMessage(req, res);
     case "DELETE":
-    //   return await deleteMessage(req, res);
+      return await deleteMessage(req, res);
     default:
       return res.status(405).end();
   }
@@ -33,7 +33,7 @@ async function getMessages(
   try {
     const messages: Message[] = await prisma.message.findMany({
       where: {
-        recipientId: Number(req.query.recipientId),
+        senderId: Number(req.query.senderId),
       },
     });
     return res.status(200).json({ data: messages });
@@ -64,8 +64,8 @@ async function createMessage(
     const newMessage: Message = await prisma.message.create({
       data: {
         text: body.text,
-        senderId: body.sender,
-        recipientId: body.recipient,
+        senderId: body.senderId,
+        recipientId: body.recipientId,
       },
     });
     return res.status(200).json({ ...newMessage });
@@ -73,7 +73,54 @@ async function createMessage(
     console.error("Request error:", err);
     res.status(500).json({
       error: "Error creating message",
-      message: err.message,
+      message: err.message || "Error creating message",
+    });
+  }
+}
+
+async function updateMessage(
+  req: NextApiRequest,
+  res: NextApiResponse<ResponseData>,
+) {
+  const { messageId, status } = req.body;
+
+  try {
+    const updatedMessage: Message = await prisma.message.update({
+      where: {
+        id: Number(messageId),
+      },
+      data: {
+        status: status,
+      },
+    });
+    return res.status(200).json({ ...updatedMessage });
+  } catch (err: any) {
+    console.error("Request error:", err);
+    res.status(500).json({
+      error: "Error updating message",
+      message: err.message || "Error updating message",
+    });
+  }
+}
+
+async function deleteMessage(
+  req: NextApiRequest,
+  res: NextApiResponse<ResponseData>,
+) {
+  const { messageId } = req.body;
+
+  try {
+    const deletedMessage: Message = await prisma.message.delete({
+      where: {
+        id: Number(messageId),
+      },
+    });
+    return res.status(200).json({ ...deletedMessage });
+  } catch (err: any) {
+    console.error("Request error:", err);
+    res.status(500).json({
+      error: "Error deleting message",
+      message: err.message || "Error deleting message",
     });
   }
 }

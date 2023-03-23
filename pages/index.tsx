@@ -1,19 +1,24 @@
 import Card from "@/components/Card";
 import Tabs from "@/components/Tabs";
-import { User } from "@prisma/client";
+import { Message, User } from "@prisma/client";
 import Head from "next/head";
 import Script from "next/script";
 import { useEffect, useState } from "react";
 import prisma from "@/lib/prisma";
+import Form from "@/components/Form";
 
 export async function getServerSideProps() {
   try {
     const user: User | null = await prisma.user.findFirst();
+    const recipient: User | null = await prisma.user.findUnique({
+      where: { id: 2 },
+    });
 
     if (user) {
       return {
         props: {
           user,
+          recipient,
         },
       };
     }
@@ -27,24 +32,28 @@ export async function getServerSideProps() {
 
 type Props = {
   user: User;
+  recipient: User;
 };
 
-export default function Home({ user }: Props) {
+export default function Home({ user, recipient }: Props) {
   console.log("user in home: ", user);
-  // const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [messages, setMessages] = useState<Message[] | null>(null);
 
-  // console.log("current user: ", currentUser);
+  console.log("userId: ", user.id);
 
-  // useEffect(() => {
-  //   const getCurrentUser = async (): Promise<{ data: User }> => {
-  //     const response = await fetch("api/user");
-  //     const data = await response.json();
-  //     setCurrentUser(data);
-  //     return data;
-  //   };
+  console.log("messages: ", messages);
 
-  //   getCurrentUser();
-  // }, []);
+  // TODO: use useSWR or React Query instead
+  useEffect(() => {
+    const getMessages = async (): Promise<Message[]> => {
+      const response = await fetch(`api/messages/?senderId=${user.id}`);
+      const data = await response.json();
+      setMessages(data.data);
+      return data;
+    };
+
+    getMessages();
+  }, []);
 
   return (
     <div>
@@ -59,14 +68,21 @@ export default function Home({ user }: Props) {
         </header>
 
         <main className="flex-1">
+          {/* @ts-ignore */}
           <section className="flex justify-center">
+            {/* @ts-ignore */}
             <div>
               <Tabs
                 labels={["All", "Accepted"]}
                 className="mb-6 flex justify-center"
               />
-              <Card />
+              {messages?.map((message: Message, index: number) => (
+                <Card content={message} user={user} recipient={recipient} />
+              ))}
+              {/* <Form recipientId={recipient.id} /> */}
             </div>
+
+            <p className="text-white">{JSON.stringify(messages)}</p>
           </section>
         </main>
 

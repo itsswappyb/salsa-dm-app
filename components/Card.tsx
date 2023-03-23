@@ -1,11 +1,19 @@
+import { Message, User } from "@prisma/client";
 import React, { FC } from "react";
 
-const Card: FC = () => {
+type CardProps = {
+  content: Message;
+  user?: User;
+  recipient?: User;
+};
+
+const Card: FC<CardProps> = ({ content, user, recipient }) => {
   return (
     <div className="card w-96 bg-neutral text-neutral-content">
       <div className="card-body items-center text-center">
-        <h2 className="card-title">Cookies!</h2>
-        <p>We are using cookies for no reason.</p>
+        <h2 className="card-title">{content?.text}</h2>
+        <p>From:&nbsp;{recipient?.username}</p>
+        <p>To:&nbsp;{user?.username}</p>
         <div className="card-actions justify-end">
           <button className="btn-primary btn">Accept</button>
           <button className="btn hover:btn-error">Reject</button>
