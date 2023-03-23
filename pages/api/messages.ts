@@ -17,6 +17,10 @@ export default async function handler(
       return await getMessages(req, res);
     case "POST":
       return await createMessage(req, res);
+    case "PUT":
+    //   return await updateMessage(req, res);
+    case "DELETE":
+    //   return await deleteMessage(req, res);
     default:
       return res.status(405).end();
   }

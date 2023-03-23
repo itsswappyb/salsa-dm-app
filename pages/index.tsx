@@ -1,9 +1,51 @@
 import Card from "@/components/Card";
 import Tabs from "@/components/Tabs";
+import { User } from "@prisma/client";
 import Head from "next/head";
 import Script from "next/script";
+import { useEffect, useState } from "react";
+import prisma from "@/lib/prisma";
 
-export default function Home() {
+export async function getServerSideProps() {
+  try {
+    const user: User | null = await prisma.user.findFirst();
+
+    if (user) {
+      return {
+        props: {
+          user,
+        },
+      };
+    }
+    return {
+      props: {},
+    };
+  } catch (err: any) {
+    console.error(err);
+  }
+}
+
+type Props = {
+  user: User;
+};
+
+export default function Home({ user }: Props) {
+  console.log("user in home: ", user);
+  // const [currentUser, setCurrentUser] = useState<User | null>(null);
+
+  // console.log("current user: ", currentUser);
+
+  // useEffect(() => {
+  //   const getCurrentUser = async (): Promise<{ data: User }> => {
+  //     const response = await fetch("api/user");
+  //     const data = await response.json();
+  //     setCurrentUser(data);
+  //     return data;
+  //   };
+
+  //   getCurrentUser();
+  // }, []);
+
   return (
     <div>
       <Head>
