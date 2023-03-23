@@ -5,3 +5,5 @@ export const messageValidationSchema = z.object({
 });
 
 export type TMessage = z.infer<typeof messageValidationSchema>;
+
+export type Tab = "All" | "Accepted";

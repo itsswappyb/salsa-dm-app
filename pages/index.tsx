@@ -1,11 +1,12 @@
 import Card from "@/components/Card";
 import Tabs from "@/components/Tabs";
-import { Message, User } from "@prisma/client";
+import { Message, Status, User } from "@prisma/client";
 import Head from "next/head";
 import Script from "next/script";
 import { useEffect, useState } from "react";
 import prisma from "@/lib/prisma";
 import Form from "@/components/Form";
+import { Tab } from "@/types";
 
 export async function getServerSideProps() {
   try {
@@ -36,12 +37,8 @@ type Props = {
 };
 
 export default function Home({ user, recipient }: Props) {
-  console.log("user in home: ", user);
   const [messages, setMessages] = useState<Message[] | null>(null);
-
-  console.log("userId: ", user.id);
-
-  console.log("messages: ", messages);
+  const [selectedLabel, setSelectedLabel] = useState<Tab>("All");
 
   // TODO: use useSWR or React Query instead
   useEffect(() => {
@@ -54,6 +51,12 @@ export default function Home({ user, recipient }: Props) {
 
     getMessages();
   }, []);
+
+  const acceptedMessages: Message[] | null =
+    messages &&
+    messages.filter(
+      (message: Message, index: number) => message.status === "ACCEPTED",
+    );
 
   return (
     <div>
@@ -68,33 +71,41 @@ export default function Home({ user, recipient }: Props) {
         </header>
 
         <main className="flex-1">
-          {/* @ts-ignore */}
-          <section className="flex justify-center">
-            {/* @ts-ignore */}
-            <div>
-              <Tabs
-                labels={["All", "Accepted"]}
-                className="mb-6 flex justify-center"
-              />
-              {messages?.map((message: Message, index: number) => (
-                <Card content={message} user={user} recipient={recipient} />
-              ))}
-              {/* <Form recipientId={recipient.id} /> */}
-            </div>
+          <section className="flex flex-col items-center justify-center">
+            <Tabs
+              labels={["All", "Accepted"]}
+              selectedLabel={selectedLabel}
+              setSelectedLabel={setSelectedLabel}
+            />
 
-            <p className="text-white">{JSON.stringify(messages)}</p>
+            <div className="mt-12 h-[300px] overflow-scroll">
+              {selectedLabel === "All" &&
+                messages
+                  ?.filter(
+                    (message: Message, index: number) =>
+                      message.status === "PENDING",
+                  )
+                  .map((message: Message, index: number) => (
+                    <Card
+                      content={message}
+                      user={user}
+                      recipient={recipient}
+                      key={index}
+                    />
+                  ))}
+              {selectedLabel === "Accepted" &&
+                acceptedMessages?.map((message: Message, index: number) => (
+                  <Card
+                    content={message}
+                    user={user}
+                    recipient={recipient}
+                    key={index}
+                  />
+                ))}
+            </div>
           </section>
         </main>
-
-        <footer className="border-t border-gray-800 px-8 py-12">
-          <div className="px-8 text-center font-medium">
-            <a href="https://github.com/andrejjurkin/create-tw">
-              Create Tailwind
-            </a>
-          </div>
-        </footer>
       </div>
-      {/* <Script src="https://buttons.github.io/buttons.js" /> */}
     </div>
   );
 }

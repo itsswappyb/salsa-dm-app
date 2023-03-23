@@ -25,7 +25,6 @@ const Form: FC = () => {
     // TODO: submit data to book API
     console.log("submitting...");
     console.log(data);
-    console.log("hello");
 
     const parsedBody = await validationSchema.safeParseAsync(data);
     if (!parsedBody.success) {

@@ -1,20 +1,26 @@
-import React, { FC, useState } from "react";
+import React, { Dispatch, FC, SetStateAction, useState } from "react";
 import clsx from "clsx";
+import { Tab } from "@/types";
 
 type Props = {
   labels: string[];
   className?: string;
+  selectedLabel: string;
+  setSelectedLabel: Dispatch<SetStateAction<Tab>>;
 };
 
-const Tabs: FC<Props> = ({ labels, className }) => {
-  const [selectedLabel, setSelectedLabel] = useState<string>(labels[0]);
-
+const Tabs: FC<Props> = ({
+  labels,
+  className,
+  selectedLabel,
+  setSelectedLabel,
+}) => {
   return (
-    <div className={clsx("btn-group", className)}>
+    <div className={clsx(className, "btn-group")}>
       {labels.map((label, index) => (
         <button
           className={clsx("btn", label === selectedLabel && "btn-active")}
-          onClick={() => setSelectedLabel(label)}
+          onClick={() => setSelectedLabel(label as Tab)}
           key={index}
         >
           {label}

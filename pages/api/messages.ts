@@ -107,7 +107,7 @@ async function deleteMessage(
   req: NextApiRequest,
   res: NextApiResponse<ResponseData>,
 ) {
-  const { messageId } = req.body;
+  const { messageId } = req.query;
 
   try {
     const deletedMessage: Message = await prisma.message.delete({
