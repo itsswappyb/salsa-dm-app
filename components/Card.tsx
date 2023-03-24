@@ -11,13 +11,12 @@ type CardProps = {
 
 async function handleAccept(messageId: number, status: string = "ACCEPTED") {
   try {
-    const response = await fetch(`api/messages`, {
+    const response = await fetch(`api/messages/${messageId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        messageId,
         status,
       }),
     });
@@ -30,7 +29,7 @@ async function handleAccept(messageId: number, status: string = "ACCEPTED") {
 
 async function handleDelete(messageId: number) {
   try {
-    const response = await fetch(`api/messages/?messageId=${messageId}`, {
+    const response = await fetch(`api/messages/${messageId}`, {
       method: "DELETE",
     });
     const data = await response.json();
